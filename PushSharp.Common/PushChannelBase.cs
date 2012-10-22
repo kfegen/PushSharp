@@ -21,7 +21,6 @@ namespace PushSharp.Common
 
 		internal event Action<double> OnQueueTimed;
 
-		object queuedNotificationsLock = new object();
 		ConcurrentQueue<Notification> queuedNotifications;
 		ManualResetEventSlim waitQueuedNotification;
 
@@ -114,6 +113,15 @@ namespace PushSharp.Common
 			else
 				Events.RaiseNotificationSendFailure(notification, new MaxSendAttemptsReachedException());
 		}
+
+        /// <summary>
+        /// Implement this method to handle send message failure. The default functionality will re-queue the message.
+        /// </summary>
+        /// <param name="notification">The notification.</param>
+        protected virtual void SendFailed(Notification notification)
+        {
+            QueueNotification(notification);
+        }
 
 		void Sender()
 		{

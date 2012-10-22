@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Concurrent;
 using System.Security.Cryptography.X509Certificates;
-using System.Linq;
 using System.Net.Sockets;
 using System.Net.Security;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Net;
@@ -63,7 +60,7 @@ namespace PushSharp.Apple
 		float reconnectBackoffMultiplier = 1.5f;
 		
 		byte[] readBuffer = new byte[6];
-		bool connected = false;
+	    private bool connected;
 		
 		X509Certificate certificate;
 		X509CertificateCollection certificates;
@@ -72,7 +69,7 @@ namespace PushSharp.Apple
 		System.IO.Stream networkStream;
 		Task taskCleanup;
 		
-		protected override void SendNotification(Common.Notification notification)
+		protected override void SendNotification(Notification notification)
 		{
 			var appleNotification = notification as AppleNotification;
 
@@ -109,7 +106,7 @@ namespace PushSharp.Apple
 				}
 				catch (Exception)
 				{ 
-					this.QueueNotification(notification); 
+					SendFailed(notification);
 				} //If this failed, we probably had a networking error, so let's requeue the notification
 			}
 		}
